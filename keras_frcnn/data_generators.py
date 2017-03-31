@@ -2,8 +2,8 @@ import numpy as np
 import cv2
 import random
 import copy
-import data_augment
-import roi_helpers
+from keras_frcnn import data_augment
+from keras_frcnn import roi_helpers
 import threading
 import itertools
 #import numba
@@ -77,8 +77,7 @@ class SampleSelector:
 		# ignore classes that have zero samples
 		self.classes = [b for b in class_count.keys() if class_count[b] > 0]
 		self.class_cycle = itertools.cycle(self.classes)
-		self.curr_class = self.class_cycle.next()
-
+		self.curr_class = next(self.class_cycle)
 	def skip_sample_for_balanced_class(self, img_data):
 
 		class_in_img = False
@@ -371,7 +370,7 @@ def threadsafe_generator(f):
 def get_anchor_gt(all_img_data, class_mapping, class_count, C, backend, mode='train'):
 	downscale = float(C.rpn_stride)
 
-	all_img_data = sorted(all_img_data)
+	#all_img_data = sorted(all_img_data)
 
 	anchor_sizes = C.anchor_box_scales
 	anchor_ratios = C.anchor_box_ratios
@@ -435,5 +434,5 @@ def get_anchor_gt(all_img_data, class_mapping, class_count, C, backend, mode='tr
 				yield [np.copy(x_img), np.copy(x_rois)], [np.copy(y_rpn_cls), np.copy(y_rpn_regr), np.copy(y_class_num), np.copy(y_class_regr)]
 
 			except Exception as e:
-				print(e)
+				print("437",e)
 				continue
